@@ -1,0 +1,9 @@
+{
+	"name": "case-challenge-factory",
+	"location": "brazilsouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "483ab7e9-827e-44f5-8b5e-01196914160c",
+		"tenantId": "4f4f5756-0a44-4930-9b50-6585d86baaf7"
+	}
+}
