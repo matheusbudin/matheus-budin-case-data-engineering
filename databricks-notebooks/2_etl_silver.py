@@ -118,7 +118,7 @@ if data_quality_issues > 0:
     raise Exception("We should not carry data with these quality checks not approved")
 else:
     fl_quality = 1 #setting a quality check flag in case we need in the future
-    print("Our data is good to procced :)")
+    print("Our data is good to proceed :)")
 
 
 
@@ -131,30 +131,16 @@ else:
 
 # COMMAND ----------
 
+# DBTITLE 1,add timestamp load for silver layer
+df_clean = df_clean.withColumn("ts_loadtimestamp_silver", current_timestamp())
+
+# COMMAND ----------
+
 # DBTITLE 1,save it partitioned by ts_load from bronze ingestion
-
-# Define the Delta table path
-delta_table_path = "dbfs:/mnt/files/silver/"
-
-# Check if the Delta table already exists
-if DeltaTable.isDeltaTable(spark, delta_table_path):
-    # Load the existing Delta table
-    delta_table = DeltaTable.forPath(spark, delta_table_path)
-
-    # Perform the merge (upsert)
-    delta_table.alias("target").merge(
-        df_clean.alias("source"),
-        "target.id = source.id"
-    ).whenMatchedUpdateAll(
-    ).whenNotMatchedInsertAll(
-    ).execute()
-else:
-    # If the Delta table does not exist, write it as a new Delta table
-    df_clean.write.partitionBy("ts_load_timestamp") \
-        .format("delta") \
-        .mode("overwrite") \
-        .save(delta_table_path)
-
+df_clean.write.partitionBy("ts_load_timestamp") \
+    .format("delta") \
+    .mode("overwrite") \
+    .save(delta_table_path)
 
 # COMMAND ----------
 
@@ -167,11 +153,4 @@ else:
 
 # COMMAND ----------
 
-delta_table_path = "dbfs:/mnt/files/silver/coalesce"
-
-# Reduzindo para uma única partição antes de salvar
-df_clean.coalesce(1).write \
-    .format("delta") \
-    .mode("overwrite") \
-    .save(delta_table_path)
-
+spark.sql(f'OPTIMIZE budinworkspac.silver.silver_bewery')
