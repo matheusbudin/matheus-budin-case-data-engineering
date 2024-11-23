@@ -1,0 +1,22 @@
+{
+	"name": "AzureDatabricks1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-13521825448265.5.azuredatabricks.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/de4263ad-65de-4707-b855-de4bfcea4388/resourceGroups/brasil-budin/providers/Microsoft.Databricks/workspaces/budinworkspac",
+			"newClusterNodeType": "Standard_F4",
+			"newClusterNumOfWorker": "1",
+			"newClusterSparkEnvVars": {
+				"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+			},
+			"newClusterVersion": "14.1.x-scala2.12",
+			"newClusterLogDestination": "dbfs:logs",
+			"clusterOption": "Fixed",
+			"newClusterInitScripts": [],
+			"dataSecurityMode": "SINGLE_USER"
+		}
+	}
+}
