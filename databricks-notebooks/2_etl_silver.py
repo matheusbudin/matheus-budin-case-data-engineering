@@ -131,16 +131,6 @@ else:
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ** saving as a delta file **
-
-# COMMAND ----------
-
-# MAGIC %fs
-# MAGIC ls /mnt/files
-
-# COMMAND ----------
-
 # DBTITLE 1,save it partitioned by ts_load from bronze ingestion
 
 # Define the Delta table path
