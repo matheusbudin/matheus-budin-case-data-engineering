@@ -1,0 +1,34 @@
+{
+	"name": "Trigger-Batch-D-Minus-One",
+	"properties": {
+		"description": "Executes this pipeline once a day",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Complete_ETL_API_Brewery_Fetch",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-11-23T19:53:00Z",
+				"endTime": "2024-11-26T19:53:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						8
+					]
+				}
+			}
+		}
+	}
+}
