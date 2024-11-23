@@ -54,10 +54,8 @@ processed_data = [
 df_brewery_api_fetch = spark.createDataFrame(processed_data, schema)
 
 # Show the schema
-df_brewery_api_fetch.printSchema()
+#df_brewery_api_fetch.printSchema()
 
-# Display the data
-display(df_brewery_api_fetch)
 
 # COMMAND ----------
 
