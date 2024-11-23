@@ -1,0 +1,20 @@
+{
+	"name": "Parquet_raw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "landing_zone",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "bronze",
+				"fileSystem": "api-pipeline"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
