@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'landing_zone'"
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keys-and-passwords.vault.azure.net/"
+		},
 		"api_openbrewery_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.openbrewerydb.org/breweries"
@@ -22,10 +26,6 @@
 		"landing_zone_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storagecasebudin.dfs.core.windows.net/"
-		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keys-and-passwords.vault.azure.net/"
 		}
 	},
 	"variables": {
@@ -50,11 +50,24 @@
 					"newClusterSparkEnvVars": {
 						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
 					},
-					"newClusterVersion": "14.1.x-scala2.12",
+					"newClusterVersion": "14.1.x-cpu-ml-scala2.12",
 					"newClusterLogDestination": "dbfs:logs",
 					"clusterOption": "Fixed",
 					"newClusterInitScripts": [],
 					"dataSecurityMode": "SINGLE_USER"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
@@ -92,17 +105,94 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Complete_ETL_API_Brewery_Fetch')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
-				}
+				"activities": [
+					{
+						"name": "FetchApiDataToBronze",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/1_brewery_api_fetch_to_bronze"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "BronzeToSilverLayer",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "FetchApiDataToBronze",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/2_etl_silver"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "SilverToGoldLayer",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "BronzeToSilverLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/3_etl_gold"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/databricks_call_api_brewery_fetch')]",
@@ -436,6 +526,46 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Json_api')]",
 				"[concat(variables('factoryId'), '/datasets/Parquet_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Trigger-Batch-D-Minus-One')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Executes this pipeline once a day",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Complete_ETL_API_Brewery_Fetch",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-11-23T19:53:00Z",
+						"endTime": "2024-11-26T19:53:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								8
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Complete_ETL_API_Brewery_Fetch')]"
 			]
 		}
 	]

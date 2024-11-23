@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'landing_zone'"
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keys-and-passwords.vault.azure.net/"
+		},
 		"api_openbrewery_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.openbrewerydb.org/breweries"
@@ -22,10 +26,6 @@
 		"landing_zone_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storagecasebudin.dfs.core.windows.net/"
-		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keys-and-passwords.vault.azure.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -60,14 +60,14 @@
 					"landing_zone_accountKey": {
 						"value": "[parameters('landing_zone_accountKey')]"
 					},
+					"AzureKeyVault1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+					},
 					"api_openbrewery_properties_typeProperties_url": {
 						"value": "[parameters('api_openbrewery_properties_typeProperties_url')]"
 					},
 					"landing_zone_properties_typeProperties_url": {
 						"value": "[parameters('landing_zone_properties_typeProperties_url')]"
-					},
-					"AzureKeyVault1_properties_typeProperties_baseUrl": {
-						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
 					}
 				}
 			},
