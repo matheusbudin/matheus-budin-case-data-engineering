@@ -1,0 +1,82 @@
+{
+	"name": "Complete_ETL_API_Brewery_Fetch",
+	"properties": {
+		"activities": [
+			{
+				"name": "FetchApiDataToBronze",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/1_brewery_api_fetch_to_bronze"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "BronzeToSilverLayer",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "FetchApiDataToBronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/2_etl_silver"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SilverToGoldLayer",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "BronzeToSilverLayer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/matheusbudin_dataengineer@outlook.com/matheus-budin-case-data-engineering/databricks-notebooks/3_etl_gold"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
