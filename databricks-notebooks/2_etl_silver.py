@@ -164,3 +164,14 @@ else:
 # MAGIC - performed a sensitive data masking for phone as an example, could have been for user name, last name, date of birth and so on.
 # MAGIC - this logic also protects the data load if the quality checks fail rasing an error that will be caught in datafactory monitoring
 # MAGIC - finally we partitioned the data by the load timestamp which is the usual approach in production, but since we only have this column after setting it up on the ingestion to bronze layer, we had to perform a similar approach when saving the data from the API.
+
+# COMMAND ----------
+
+delta_table_path = "dbfs:/mnt/files/silver/coalesce"
+
+# Reduzindo para uma única partição antes de salvar
+df_clean.coalesce(1).write \
+    .format("delta") \
+    .mode("overwrite") \
+    .save(delta_table_path)
+

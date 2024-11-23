@@ -78,5 +78,11 @@ else:
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC
+delta_table_path = "dbfs:/mnt/files/gold/coalesce"
+
+# Reduzindo para uma única partição antes de salvar
+df_gold.coalesce(1).write \
+    .format("delta") \
+    .mode("overwrite") \
+    .save(delta_table_path)
+
