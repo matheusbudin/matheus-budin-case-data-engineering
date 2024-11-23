@@ -1,0 +1,12 @@
+{
+	"name": "api_openbrewery",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://api.openbrewerydb.org/breweries",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
