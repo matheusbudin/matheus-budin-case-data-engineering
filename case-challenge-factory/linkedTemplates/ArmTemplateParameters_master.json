@@ -8,6 +8,18 @@
 		"AzureDatabricks1_accessToken": {
 			"value": ""
 		},
+		"landing_zone_accountKey": {
+			"value": ""
+		},
+		"api_openbrewery_properties_typeProperties_url": {
+			"value": "https://api.openbrewerydb.org/breweries"
+		},
+		"landing_zone_properties_typeProperties_url": {
+			"value": "https://storagecasebudin.dfs.core.windows.net/"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://keys-and-passwords.vault.azure.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},
