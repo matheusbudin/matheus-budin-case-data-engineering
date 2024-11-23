@@ -1,12 +1,11 @@
 {
 	"name": "AzureDatabricks1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "AzureDatabricks",
 		"typeProperties": {
 			"domain": "https://adb-13521825448265.5.azuredatabricks.net",
-			"authentication": "MSI",
-			"workspaceResourceId": "/subscriptions/de4263ad-65de-4707-b855-de4bfcea4388/resourceGroups/brasil-budin/providers/Microsoft.Databricks/workspaces/budinworkspac",
 			"newClusterNodeType": "Standard_F4",
 			"newClusterNumOfWorker": "1",
 			"newClusterSparkEnvVars": {
@@ -16,7 +15,8 @@
 			"newClusterLogDestination": "dbfs:logs",
 			"clusterOption": "Fixed",
 			"newClusterInitScripts": [],
-			"dataSecurityMode": "SINGLE_USER"
+			"dataSecurityMode": "SINGLE_USER",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEEyQUExMkEwLTVBMTgtNDczQS05NzU5LTRCNTlCQjY4MzJEN19lZTA3ZjhmNS0zMDQ1LTQwNzUtYTE5Yy0wOTNlMWFmNTMzNDYiDQp9"
 		}
 	}
 }
