@@ -295,3 +295,20 @@ ORDER BY state, percentage DESC;
 ```
 - SQL Editor result:
 ![5_most_popular_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/5_most_popular_brewery_types.png)
+
+## 9. Dashboard / Business Reports:
+
+The following dashboard represents a example of some KPI's developed by the queries in the previous section. It gives information for example, of brewery types geographic distribution; the states with the most breweries and so on.
+**disclaimer**: Once again due to the non-corporate a.k.a personal Microsoft account, the report is not published online, but you can find the `.pbix` on the following folder:
+[report_dashboard](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/powerbi/data-engineering-brewery.pbix)
+
+- **Report / Dashborad**:
+
+![report_dashboard](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/report_dashboard.png)
+
+
+## Future improvements:
+
+- Add an Event based trigger inside data factory;
+- Integrate the system monitoring with **Azure DevOps Pipelines Monitoring** to ensure a more robust alerts monitoring.
+- Use delta live tables and test which solution is more performatic and more cost effective.
