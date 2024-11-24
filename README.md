@@ -99,3 +99,114 @@ client_secret = os.getenv("CLIENT_SECRET_VALUE")
   - In this case to connect to your database, so you can have access to your tables, it is required a **JDBC/ODBC** connection. and you will need to go on your cluster configuration and copy the information represented by the print screen bellow (**it is `censored in red` because it is also a sensitive information).
 
 ![Databricks <-> Power Bi connection](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/databricks_powerBi_connection.png)
+
+## 4. Coding explanations:
+- **disclaimer**: all the databricks contains fully commented codes, this section is just to point the most important transformations inside the code.
+
+### 4.1 Fetching data using Python and Requests Library:
+
+- The following code extracted from the notebook -> [1_brewery_api_fetch_to_bronze.ipynb](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/databricks-notebooks/databricks-notebooks-ipynb-version/1_brewery_api_fetch_to_bronze.ipynb)  shows the flexibility to fetch the amount of itens per api calling, just change the parameter: `per_page` that represents `itens per page` that is passed to fetch the data from API.
+
+```python
+# Initialize variables
+# 'total_pages' means = set the ammount of list chuncks to be fetched
+api_url = "https://api.openbrewerydb.org/v1/breweries"
+per_page = 50
+total_pages = 10 
+all_breweries_data = []
+
+# Fetch data from the API in chunks of 50 items
+for page in range(1, total_pages + 1):
+    params = {'per_page': per_page, 'page': page}
+    response = requests.get(api_url, params=params)
+    
+    # Check for successful response
+    if response.status_code == 200:
+        breweries_data = response.json()
+        all_breweries_data.extend(breweries_data)
+    else:
+        print(f"Failed to fetch data from page {page}:", response.status_code)
+        break
+```
+- this notebook also have a deduplication, that ensures non duplicated `ID's`.
+
+### 4.2 Data cleaning and transformation (Silver Layer):
+The notebook :
+[2_etl_silver.ipynb](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/databricks-notebooks/databricks-notebooks-ipynb-version/2_etl_silver.ipynb)
+
+It Has some transformations to secure data quality:
+
+- droping rows with `NULL` **ID's**:
+```python
+# drops the rows with missing id
+df_clean = df_clean.na.drop(subset=["id"])
+```
+
+- Hashing sensitive information: I masked the `phone` data to show a way of protection for sensitive data (e.g: name, last name, address, etc)
+
+```python
+# masking sensitive data (like phone, user cpf, user uuid and so on)
+def hash_sensitive_data(df: DataFrame, column_name: str) -> DataFrame:
+    return df.withColumn(column_name, sha2(col(column_name), 256))
+
+df_clean = hash_sensitive_data(df_clean, "phone")
+display(df_clean)
+
+```
+- Postal code formats filter: This code used USA postal codes as an example, it can be replicated to more postal codes patterns:
+
+```python
+#drops the rows that has the postal code out of the 'xxxxx-xxxx' format - testing for USA as an example
+usa_postal_code_pattern = "^[0-9]{5}(-[0-9]{4})?$|^[0-9]{5}-?$"  # USA format: xxxxx or xxxxx-xxxx
+
+# Filter rows with invalid postal codes for the United States
+df_invalid_postal = df_clean.filter(
+    (col("country") == "united states") & ~col("postal_code").rlike(usa_postal_code_pattern)
+)
+```
+
+- The code checks for duplicated IDs once again, checks if there are any rows that does not pass the postal-code pattern verification:
+
+```python
+
+#drops the duplicated rows
+df_clean = df_clean.dropDuplicates(["id"])
+
+# Validate 'postal_code' format
+if df_invalid_postal.count() > 0:
+    print("Warning: Invalid postal codes found.")
+
+#filter and test for both phone and website rows NOT NULL
+df_clean = df_clean.filter(~(col("phone").isNull() & col("website_url").isNull()))
+```
+- then i decided o drop rows that does not have a contact information like **NULL** values for **phone**:
+
+```python
+df_no_contact_information = df_clean.filter((col("phone").isNull() & col("website_url").isNull()))
+                                            
+if df_no_contact_information.count() > 0:
+    print(f"We have {df_no_contact_information.count()} registries that does not have a contact information")
+```
+
+- Finally, i performed a data quality check that will help the **pipeline MONITORING** , that stops the pipeline and raises an error that will be catched by Azure data factory:
+
+```python
+# Log data quality issues
+data_quality_issues = df_duplicates.count() + df_invalid_postal.count() + df_no_contact_information.count()
+if data_quality_issues > 0:
+    raise Exception("We should not carry data with these quality checks not approved")
+else:
+    fl_quality = 1 #setting a quality check flag in case we need in the future
+    print("Our data is good to proceed :)")
+```
+### 4.3 Data Aggregation - Gold Layer:
+[3_etl_gold.ipynb](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/databricks-notebooks/databricks-notebooks-ipynb-version/3_etl_gold.ipynb)
+- This notebook aggregates the information per `name, brewery_type, state, country, city`, this aggregation can be treated like aN **OBT - One Big Table** that is widely used on the **Data Vault 2.0 and Data Vault 2.1 data modeling** this means that i can provide any business unit with only the business information that they need (this is sometimes made in `views format` but usually materialized in tables as well).
+
+```python
+# Aggregate the number of breweries per type and state
+df_gold = df_silver.groupBy("name", "brewery_type", "state", "country", "city") \
+                   .agg(count("id").alias("brewery_count")) \
+                   .withColumn("ts_loadtimestamp_gold", current_timestamp())
+```
+- the ```ts_loadtimestamp_gold``` is created for incremental data methodology and data traceability.
