@@ -210,3 +210,16 @@ df_gold = df_silver.groupBy("name", "brewery_type", "state", "country", "city") 
                    .withColumn("ts_loadtimestamp_gold", current_timestamp())
 ```
 - the ```ts_loadtimestamp_gold``` is created for incremental data methodology and data traceability.
+
+## 5. Orchestration: Fully pipeline Orchestrated by Azure Data Factory
+
+- The pipeline definition [Complete_ETL_API_Brewery_Fetch.json](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/datafactory/pipeline/Complete_ETL_API_Brewery_Fetch.json) calls the three notebooks responsible for the end to end pipeline by fisrt fetching the data from the API, followed by calling the data cleaning and transformations and finally aggregating the data and saving as gold table.
+
+![End to End Brewery Medallion Data Pipeline](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/datafactory_pipeline.png)
+
+- It also has a **Trigger** that executes the pipeline automatically once a day (D-1 batch pipeline).
+
+## 6. Monitoring
+
+- If the pipeline fails, it e-mails the users in the same **user group** e.g: data engineering workgroup.
+- it also has the flexbility to integrate with: `slack, Microsoft Teams and Goole Meet` so that the monitoring logs can be send to this communication channels.
