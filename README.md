@@ -18,7 +18,7 @@ The following architecture, based on Azure Cloud and the Databricks platform, wa
 
 - **Microsoft Azure Cloud:** all the resources were used inside azure cloud: resource group, active directory, key vault, data lake gen2, data factory, databricks platform.
 
-- **Data factory:** used mainly to call the databricks notebooks. I also have an example of api fetch directly from `Copy activity` in the [data factory folder](https://github.com/matheusbudin/matheus-budin-case-data-engaineering/tree/main/datafactory)
+- **Data factory:** used mainly to call the databricks notebooks. I also have an example of api fetch directly from `Copy activity` in the [data factory folder](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/datafactory/pipeline/adf_fetch_api_directly.json)
 
 - **Databricks:** where our ETL pipeline core is located. I provided the 3 versions of code:
 1) **.py** code that is managed by databricks + github versioning control. 
@@ -243,6 +243,7 @@ GROUP BY state
 ORDER BY total_breweries DESC;
 ```
 - SQL Editor result:
+
 ![1_total_number_of_breweries_per_state](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/1_total_number_of_breweries_per_state.png)
 
 ### 8.2 Top Brewery Types Nation Wide:
@@ -254,6 +255,7 @@ GROUP BY brewery_type
 ORDER BY total_breweries DESC;
 ```
 - SQL Editor result:
+
 ![2_top_brewery_types_nation_wide](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/2_top_brewery_types_nation_wide.png)
 
 ### 8.3  States with the most micro breweries:
@@ -266,6 +268,7 @@ GROUP BY state
 ORDER BY SUM(brewery_count) DESC;
 ```
 - SQL Editor result:
+
 ![3_state_with_the_most_micro_breweries](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/3_state_with_the_most_micro_breweries.png)
 
 ### 8.4 Percentage Distribution of Brewery Types per State
@@ -280,6 +283,7 @@ FROM budinworkspac.gold.gold_brewery_aggregated
 ORDER BY state, percentage DESC;
 ```
 - SQL Editor result:
+
 ![4_state_with_the_highest_diversity_of_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/4_state_with_the_highest_diversity_of_brewery_types.png)
 
 ### 8.5 Most popular brewery types:
@@ -294,12 +298,14 @@ FROM budinworkspac.gold.gold_brewery_aggregated
 ORDER BY state, percentage DESC;
 ```
 - SQL Editor result:
+
 ![5_most_popular_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/5_most_popular_brewery_types.png)
 
 ## 9. Dashboard / Business Reports:
 
 The following dashboard represents a example of some KPI's developed by the queries in the previous section. It gives information for example, of brewery types geographic distribution; the states with the most breweries and so on.
 **disclaimer**: Once again due to the non-corporate a.k.a personal Microsoft account, the report is not published online, but you can find the `.pbix` on the following folder:
+
 [report_dashboard](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/powerbi/data-engineering-brewery.pbix)
 
 - **Report / Dashborad**:
