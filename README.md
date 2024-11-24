@@ -1,5 +1,3 @@
-# matheus-budin-case-data-engineering
------
 # Data Engineering Brewery Data Pipeline
 
 ## 1. Case Objective and Project Overview
@@ -20,4 +18,8 @@ The following architecture, based on Azure Cloud and the Databricks platform, wa
 
 - Microsoft Azure Cloud: all the resources were used inside azure cloud: resource group, active directory, key vault, data lake gen2, data factory, databricks platform.
 
-- Data factory: used mainly to call the databricks notebooks. I also have an example of api fetch directly from `Copy` activity in the [data factory folder](https://github.com/matheusbudin/matheus-budin-case-data-engineering/tree/main/datafactory)
+- Data factory: used mainly to call the databricks notebooks. I also have an example of api fetch directly from `Copy activity` in the [data factory folder](https://github.com/matheusbudin/matheus-budin-case-data-engaineering/tree/main/datafactory)
+
+- Databricks: where our ETL pipeline core is located. I provided the 3 versions of code:
+1) .py code that is managed by databricks + github versioning control. 2) ipynb that are like the jupyter notebooks so its easier to consult the code directly in github. 3) .dbc files if you want to import into your own databricks workspace and test it.
+
