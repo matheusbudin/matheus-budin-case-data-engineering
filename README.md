@@ -223,3 +223,69 @@ df_gold = df_silver.groupBy("name", "brewery_type", "state", "country", "city") 
 
 - If the pipeline fails, it e-mails the users in the same **user group** e.g: data engineering workgroup.
 - it also has the flexbility to integrate with: `slack, Microsoft Teams and Goole Meet` so that the monitoring logs can be send to this communication channels.
+
+
+## extra -> 7. Ad-hoc querys and business KPIs to support DECISION MAKING:
+These KPI's were created from a simulation of a **AD-HOC** demand, and the code was developed inside **Databricks SQL Editor**.
+
+### 7.1 Total number of breweries per State
+
+```sql
+SELECT state, SUM(brewery_count) AS total_breweries
+FROM gold.gold_brewery_aggregated
+GROUP BY state
+ORDER BY total_breweries DESC;
+```
+- SQL Editor result:
+![1_total_number_of_breweries_per_state](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/1_total_number_of_breweries_per_state.png)
+
+### 7.2 Top Brewery Types Nation Wide:
+
+```sql
+SELECT brewery_type, SUM(brewery_count) AS total_breweries
+FROM gold.gold_brewery_aggregated
+GROUP BY brewery_type
+ORDER BY total_breweries DESC;
+```
+- SQL Editor result:
+![2_top_brewery_types_nation_wide](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/2_top_brewery_types_nation_wide.png)
+
+### 7.3  States with the most micro breweries:
+
+```sql
+SELECT state, SUM(brewery_count)
+FROM gold.gold_brewery_aggregated
+WHERE brewery_type = 'micro'
+GROUP BY state
+ORDER BY SUM(brewery_count) DESC;
+```
+- SQL Editor result:
+![3_state_with_the_most_micro_breweries](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/3_state_with_the_most_micro_breweries.png)
+
+### 7.4 Percentage Distribution of Brewery Types per State
+
+```sql
+SELECT 
+    state,
+    brewery_type,
+    brewery_count,
+    ROUND((brewery_count * 100.0) / SUM(brewery_count) OVER(PARTITION BY state), 2) AS percentage
+FROM budinworkspac.gold.gold_brewery_aggregated
+ORDER BY state, percentage DESC;
+```
+- SQL Editor result:
+![4_state_with_the_highest_diversity_of_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/4_state_with_the_highest_diversity_of_brewery_types.png)
+
+### 7.5 Most popular brewery types:
+
+```sql
+SELECT 
+    state,
+    brewery_type,
+    brewery_count,
+    ROUND((brewery_count * 100.0) / SUM(brewery_count) OVER(PARTITION BY state), 2) AS percentage
+FROM budinworkspac.gold.gold_brewery_aggregated
+ORDER BY state, percentage DESC;
+```
+- SQL Editor result:
+![5_most_popular_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/5_most_popular_brewery_types.png)

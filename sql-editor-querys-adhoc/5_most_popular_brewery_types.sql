@@ -1,3 +1,4 @@
+--5_most_popular_brewery_types
 WITH RankedBreweries AS (
     SELECT
         state,

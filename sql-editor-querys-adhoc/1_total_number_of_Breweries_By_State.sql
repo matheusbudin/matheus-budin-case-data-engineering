@@ -1,4 +1,4 @@
--- 1_total number of Breweries By State
+-- 1_total number of Breweries per State
 
 SELECT state, SUM(brewery_count) AS total_breweries
 FROM gold.gold_brewery_aggregated
