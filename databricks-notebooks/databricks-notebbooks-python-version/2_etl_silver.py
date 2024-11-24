@@ -136,9 +136,9 @@ df_clean = df_clean.withColumn("ts_loadtimestamp_silver", current_timestamp())
 
 # COMMAND ----------
 
-# DBTITLE 1,save it partitioned by ts_load from bronze ingestion
+
 delta_table_path = '/mnt/files/silver/'
-df_clean.write.partitionBy("ts_load_timestamp") \
+df_clean.write.partitionBy("state") \
     .format("delta") \
     .mode("overwrite") \
     .save(delta_table_path)
