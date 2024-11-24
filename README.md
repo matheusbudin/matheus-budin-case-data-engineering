@@ -224,11 +224,17 @@ df_gold = df_silver.groupBy("name", "brewery_type", "state", "country", "city") 
 - If the pipeline fails, it e-mails the users in the same **user group** e.g: data engineering workgroup.
 - it also has the flexbility to integrate with: `slack, Microsoft Teams and Goole Meet` so that the monitoring logs can be send to this communication channels.
 
+## 7. Security
+The security have been already descbribed throughout the documentation, so with that being said, here is a summary:
 
-## extra -> 7. Ad-hoc querys and business KPIs to support DECISION MAKING:
+- **Credentials, enviroment variables, tokens:** needs to be inside **Azure key vault**, in adition the enviroment variables can be protected inside the databricks cluster provisioning.
+
+- **Role-Based Access Control (RBAC):** follow the **least previlege needed** to assign the roles with security. Meaning, for example, that business users can not have acess to infrastructure roles and the other way around is also true.
+
+## extra -> 8. Ad-hoc querys and business KPIs to support DECISION MAKING:
 These KPI's were created from a simulation of a **AD-HOC** demand, and the code was developed inside **Databricks SQL Editor**.
 
-### 7.1 Total number of breweries per State
+### 8.1 Total number of breweries per State
 
 ```sql
 SELECT state, SUM(brewery_count) AS total_breweries
@@ -239,7 +245,7 @@ ORDER BY total_breweries DESC;
 - SQL Editor result:
 ![1_total_number_of_breweries_per_state](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/1_total_number_of_breweries_per_state.png)
 
-### 7.2 Top Brewery Types Nation Wide:
+### 8.2 Top Brewery Types Nation Wide:
 
 ```sql
 SELECT brewery_type, SUM(brewery_count) AS total_breweries
@@ -250,7 +256,7 @@ ORDER BY total_breweries DESC;
 - SQL Editor result:
 ![2_top_brewery_types_nation_wide](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/2_top_brewery_types_nation_wide.png)
 
-### 7.3  States with the most micro breweries:
+### 8.3  States with the most micro breweries:
 
 ```sql
 SELECT state, SUM(brewery_count)
@@ -262,7 +268,7 @@ ORDER BY SUM(brewery_count) DESC;
 - SQL Editor result:
 ![3_state_with_the_most_micro_breweries](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/3_state_with_the_most_micro_breweries.png)
 
-### 7.4 Percentage Distribution of Brewery Types per State
+### 8.4 Percentage Distribution of Brewery Types per State
 
 ```sql
 SELECT 
@@ -276,7 +282,7 @@ ORDER BY state, percentage DESC;
 - SQL Editor result:
 ![4_state_with_the_highest_diversity_of_brewery_types](https://github.com/matheusbudin/matheus-budin-case-data-engineering/blob/main/images/4_state_with_the_highest_diversity_of_brewery_types.png)
 
-### 7.5 Most popular brewery types:
+### 8.5 Most popular brewery types:
 
 ```sql
 SELECT 
