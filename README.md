@@ -289,13 +289,21 @@ ORDER BY state, percentage DESC;
 ### 8.5 Most popular brewery types:
 
 ```sql
-SELECT 
-    state,
-    brewery_type,
-    brewery_count,
-    ROUND((brewery_count * 100.0) / SUM(brewery_count) OVER(PARTITION BY state), 2) AS percentage
-FROM budinworkspac.gold.gold_brewery_aggregated
-ORDER BY state, percentage DESC;
+WITH RankedBreweries AS (
+    SELECT
+        state,
+        brewery_type,
+        brewery_count,
+        ROW_NUMBER() OVER(PARTITION BY state ORDER BY brewery_count DESC) AS rank
+    FROM gold.gold_brewery_aggregated
+)
+SELECT
+    brewery_type AS most_popular_brewery_type,
+    SUM(brewery_count)
+FROM RankedBreweries
+WHERE rank = 1
+GROUP BY brewery_type
+ORDER BY SUM(brewery_count) DESC;
 ```
 - SQL Editor result:
 
